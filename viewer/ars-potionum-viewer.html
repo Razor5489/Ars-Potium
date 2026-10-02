@@ -32,6 +32,12 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071811}
       if (!d || !w) return;
       const download = d.getElementById('download');
       if (download) download.remove();
+      if (!d.getElementById('background-music-script')) {
+        const music = d.createElement('script');
+        music.id = 'background-music-script';
+        music.src = new URL('background-music.js?v=20261002-1', location.href).href;
+        d.body.appendChild(music);
+      }
       d.addEventListener('contextmenu', e => e.preventDefault(), true);
       d.addEventListener('dragstart', e => e.preventDefault(), true);
       d.addEventListener('keydown', block, true);
