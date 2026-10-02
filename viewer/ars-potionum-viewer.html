@@ -15,12 +15,10 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071811}
 </style>
 </head>
 <body>
-<iframe id="content" src="about:blank" title="Ars Potionum" allowfullscreen></iframe>
+<iframe id="content" src="book-content.html" title="Ars Potionum" allowfullscreen></iframe>
 <script>
 (() => {
   const frame = document.getElementById('content');
-  let preparedUrl = null;
-
   const block = e => {
     const k = String(e.key||'').toLowerCase();
     const cmd = e.ctrlKey || e.metaKey;
@@ -28,85 +26,10 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071811}
       e.preventDefault(); e.stopPropagation(); return false;
     }
   };
-
-  const waitFixesCode = `const waitFixes={
-10:[{y:789,text:"Attendi tra i 3 e massimo 15 secondi"}],
-11:[{y:801,text:"Attendi tra i 5 e massimo 25 secondi"}],
-13:[{y:789,text:"Attendi tra i 3 e massimo 12 secondi"}],
-14:[{y:789,text:"Attendi tra i 3 e massimo 12 secondi"}],
-16:[{y:753,text:"Attendi tra i 8 e massimo 30 secondi"}],
-17:[{y:765,text:"Attendi tra i 3 e massimo 14 secondi"}],
-18:[{y:765,text:"Attendi tra i 3 e massimo 14 secondi"}],
-20:[{y:789,text:"Attendi tra i 4 e massimo 18 secondi"}],
-21:[{y:765,text:"Attendi tra i 5 e massimo 20 secondi"}],
-23:[{y:825,text:"Attendi tra i 5 e massimo 20 secondi"}],
-24:[{y:753,text:"Attendi tra i 6 e massimo 25 secondi"}],
-25:[{y:873,text:"Attendi tra i 4 e massimo 18 secondi"}],
-27:[{y:775,text:"Attendi tra i 4 e massimo 18 secondi"}],
-28:[{y:801,text:"Attendi tra i 8 e massimo 30 secondi"}],
-29:[{y:777,text:"Attendi tra i 10 e massimo 40 secondi"}],
-31:[{y:777,text:"Attendi tra i 4 e massimo 16 secondi"}],
-32:[{y:861,text:"Attendi tra i 12 e massimo 45 secondi"},{y:957,text:"Attendi tra i 5 e massimo 20 secondi"}]
-};
-function waitOverlayAt(i){
- const fixes=waitFixes[i+1];if(!fixes)return '';
- return '<svg class="wait-overlay" viewBox="0 0 1024 1448" preserveAspectRatio="none" aria-hidden="true">'+fixes.map(f=>'<rect x="132" y="'+(f.y-20)+'" width="520" height="26" fill="#f8f4e9"/><text x="139" y="'+f.y+'" font-family="Georgia, Times New Roman, serif" font-size="19.5" fill="#31423b">'+f.text+'</text>').join('')+'</svg>';
-}
-function imageAt(i){if(i<0||i>=count)return '';return '<img draggable="false" alt="Pagina '+(i+1)+'" src="'+data.pages[i].image+'">'+waitOverlayAt(i)}`;
-
-  function enhanceBook(html) {
-    const open = '<script id="book-data" type="application/json">';
-    const start = html.indexOf(open);
-    if (start < 0) throw new Error('Dati del libro non trovati');
-    const jsonStart = start + open.length;
-    const jsonEnd = html.indexOf('</' + 'script>', jsonStart);
-    if (jsonEnd < 0) throw new Error('Fine dati del libro non trovata');
-
-    const data = JSON.parse(html.slice(jsonStart, jsonEnd));
-    for (const page of data.pages) {
-      page.text = String(page.text || '').replace(
-        /Attendi\s+(\d+)\s*[-–]\s*(\d+)\s+secondi/g,
-        (_, min, max) => `Attendi tra i ${min} e massimo ${max} secondi`
-      );
-    }
-
-    if (data.pages.length === 42) {
-      data.pages.push({
-        image: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==',
-        text: 'Controcopertina interna'
-      });
-      data.pages.push({
-        image: data.pages[0].image,
-        text: 'Copertina finale\nArs Potionum · Manuale di Pozioni\nA cura del professor Lucian Sharp.'
-      });
-    }
-    if (!data.chapters.some(ch => ch.title === 'Copertina finale')) {
-      data.chapters.push({title:'Copertina finale', page:data.pages.length});
-    }
-
-    html = html.slice(0, jsonStart) + JSON.stringify(data) + html.slice(jsonEnd);
-    html = html.replace('max="42" value="1"', 'max="' + data.pages.length + '" value="1"');
-
-    const cssNeedle = '.page img,.face img{display:block;width:100%;height:100%;object-fit:fill;user-select:none;-webkit-user-drag:none}';
-    if (!html.includes('.wait-overlay{')) {
-      html = html.replace(
-        cssNeedle,
-        cssNeedle + '.wait-overlay{position:absolute;inset:0;width:100%;height:100%;z-index:5;pointer-events:none}'
-      );
-    }
-
-    const oldImageAt = "function imageAt(i){if(i<0||i>=count)return '';return '<img draggable=\"false\" alt=\"Pagina '+(i+1)+'\" src=\"'+data.pages[i].image+'\">'}";
-    if (!html.includes('const waitFixes=')) {
-      if (!html.includes(oldImageAt)) throw new Error('Funzione di rendering non trovata');
-      html = html.replace(oldImageAt, waitFixesCode);
-    }
-    return html;
-  }
-
   const protect = () => {
     try {
       const d = frame.contentDocument, w = frame.contentWindow;
-      if (!d || !w || d.URL === 'about:blank') return;
+      if (!d || !w) return;
       const download = d.getElementById('download');
       if (download) download.remove();
       if (!d.getElementById('background-music-script')) {
@@ -127,26 +50,9 @@ function imageAt(i){if(i<0||i>=count)return '';return '<img draggable="false" al
       w.addEventListener('keydown', block, true);
     } catch (_) {}
   };
-
-  async function prepareBook() {
-    try {
-      const response = await fetch('book-content.html?v=20261002-coverwait1', {cache:'no-store'});
-      if (!response.ok) throw new Error('Impossibile caricare il libro');
-      const source = await response.text();
-      const enhanced = enhanceBook(source);
-      preparedUrl = URL.createObjectURL(new Blob([enhanced], {type:'text/html;charset=utf-8'}));
-      frame.src = preparedUrl;
-    } catch (err) {
-      console.error(err);
-      frame.src = 'book-content.html?v=20261002-coverwait1';
-    }
-  }
-
   frame.addEventListener('load', protect);
-  window.addEventListener('beforeunload', () => { if (preparedUrl) URL.revokeObjectURL(preparedUrl); });
   document.addEventListener('contextmenu', e => e.preventDefault(), true);
   document.addEventListener('keydown', block, true);
-  prepareBook();
 })();
 </script>
 </body>
