@@ -38,6 +38,12 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071811}
         music.src = new URL('background-music.js?v=20261002-2', location.href).href;
         d.body.appendChild(music);
       }
+      if (!d.getElementById('page-turn-sound-script')) {
+        const sound = d.createElement('script');
+        sound.id = 'page-turn-sound-script';
+        sound.src = new URL('page-turn-sound.js?v=20261002-1', location.href).href;
+        d.body.appendChild(sound);
+      }
       d.addEventListener('contextmenu', e => e.preventDefault(), true);
       d.addEventListener('dragstart', e => e.preventDefault(), true);
       d.addEventListener('keydown', block, true);
