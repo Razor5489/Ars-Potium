@@ -11,7 +11,7 @@
     #music-toggle[aria-pressed="true"]{color:#ecd7a7;border-color:#c6a768;background:#203c2c}
     #music-info{padding-inline:11px;color:#c6a768}
     .music-panel{position:absolute;right:0;top:calc(100% + 10px);width:min(290px,calc(100vw - 30px));padding:17px;border:1px solid #6e6446;border-radius:9px;background:#10271d;color:#eee9db;box-shadow:0 10px 30px #0008;z-index:30;line-height:1.6}
-    .music-panel[hidden]{display:none}
+    .music-panel[hidden],#music-volume[hidden]{display:none}
     .music-panel p{margin:0 0 12px}
     .music-panel a{color:#e1c68d;text-decoration:underline;text-underline-offset:3px}
     .music-panel label{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:4px}
