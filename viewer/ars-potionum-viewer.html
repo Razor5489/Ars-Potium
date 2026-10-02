@@ -38,13 +38,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071811}
         music.src = new URL('background-music.js?v=20261002-2', location.href).href;
         d.body.appendChild(music);
       }
-      if (!d.getElementById('book-fixes-script')) {
-        const fixes = d.createElement('script');
-        fixes.id = 'book-fixes-script';
-        fixes.src = new URL('book-fixes.js?v=20261002-backcover1', location.href).href;
-        fixes.async = false;
-        d.body.appendChild(fixes);
-      }
       if (!d.getElementById('page-turn-sound-script')) {
         const sound = d.createElement('script');
         sound.id = 'page-turn-sound-script';
