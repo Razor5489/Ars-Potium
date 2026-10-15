@@ -13,60 +13,12 @@
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071811}
 #book{display:block;width:100%;height:100%;border:0}
-#scholar-presence{
-  position:fixed;
-  left:14px;
-  top:12px;
-  bottom:auto;
-  z-index:20;
-  display:flex;
-  align-items:center;
-  gap:7px;
-  padding:6px 10px 7px;
-  border:1px solid rgba(214,190,136,.16);
-  border-radius:9px;
-  background:rgba(7,24,17,.42);
-  color:rgba(231,218,184,.72);
-  font:italic 11px/1.35 Georgia,"Times New Roman",serif;
-  letter-spacing:.01em;
-  box-shadow:0 2px 10px rgba(0,0,0,.10);
-  backdrop-filter:blur(2px);
-  -webkit-backdrop-filter:blur(2px);
-  pointer-events:none;
-  user-select:none;
-  overflow:visible;
-}
-#scholar-presence .presence-dot{
-  width:5px;
-  height:5px;
-  flex:0 0 auto;
-  border-radius:50%;
-  background:#9bae7b;
-  box-shadow:0 0 5px rgba(155,174,123,.35);
-  opacity:.75;
-}
-#scholar-presence-text{
-  display:block;
-  white-space:nowrap;
-  padding:1px 1px 2px 0;
-}
-@media(max-width:700px){
-  #scholar-presence{
-    left:8px;
-    top:8px;
-    bottom:auto;
-    max-width:calc(100vw - 28px);
-    padding:5px 9px 6px;
-    font-size:10px;
-    line-height:1.35;
-    background:rgba(7,24,17,.34);
-  }
-}
+#scholar-presence{display:none!important}
 @media print{html,body,#book,#scholar-presence{display:none!important}}
 </style>
 </head>
 <body>
-<iframe id="book" src="viewer/ars-potionum-viewer.html?v=20261015-v3-5" title="Ars Potionum" allow="fullscreen" allowfullscreen></iframe>
+<iframe id="book" src="viewer/ars-potionum-viewer.html?v=20261015-v3-6" title="Ars Potionum" allow="fullscreen" allowfullscreen></iframe>
 
 <div id="scholar-presence" aria-live="polite">
   <span class="presence-dot" aria-hidden="true"></span>
@@ -90,11 +42,122 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071811}
     }
   };
 
+  const installInlinePresence = (viewerDoc) => {
+    try {
+      const inner = viewerDoc.getElementById('content');
+      if (!inner) return;
+
+      const install = () => {
+        try {
+          const d = inner.contentDocument;
+          if (!d || !d.body || d.getElementById('scholar-presence-inline')) return;
+
+          const normalize = value => String(value || '').replace(/\s+/g, ' ').trim();
+          const exact = 'Tabula Materiarum · Indice';
+          const selectors = 'select,button,[role="button"],[role="combobox"],div,span';
+          const nodes = Array.from(d.querySelectorAll(selectors));
+
+          let tabula = nodes.find(el => normalize(el.textContent) === exact);
+          if (!tabula) {
+            tabula = nodes
+              .filter(el => {
+                const text = normalize(el.textContent);
+                return text.includes('Tabula Materiarum') && text.length <= 80;
+              })
+              .sort((a,b) => normalize(a.textContent).length - normalize(b.textContent).length)[0];
+          }
+          if (!tabula || !tabula.parentNode) return;
+
+          const badge = d.createElement('span');
+          badge.id = 'scholar-presence-inline';
+          badge.setAttribute('aria-live', 'polite');
+          badge.style.cssText = [
+            'display:inline-flex',
+            'align-items:center',
+            'justify-content:center',
+            'gap:6px',
+            'flex:0 0 auto',
+            'box-sizing:border-box',
+            'min-height:38px',
+            'padding:7px 10px',
+            'margin-right:8px',
+            'border:1px solid rgba(190,155,80,.55)',
+            'border-radius:6px',
+            'background:rgba(8,35,26,.72)',
+            'color:#e8dfbf',
+            'font:italic 11px/1.2 Georgia,"Times New Roman",serif',
+            'white-space:nowrap',
+            'pointer-events:none',
+            'user-select:none',
+            'vertical-align:middle'
+          ].join(';');
+
+          const dot = d.createElement('span');
+          dot.setAttribute('aria-hidden','true');
+          dot.style.cssText = 'width:5px;height:5px;border-radius:50%;background:#9bae7b;box-shadow:0 0 5px rgba(155,174,123,.35);flex:0 0 auto';
+
+          const text = d.createElement('span');
+          text.id = 'scholar-presence-inline-text';
+          const fallback = document.getElementById('scholar-presence-text');
+          text.textContent = fallback ? fallback.textContent : '0 studiosi online';
+
+          badge.append(dot, text);
+          tabula.parentNode.insertBefore(badge, tabula);
+
+          const fitToolbar = () => {
+            try {
+              const vw = d.documentElement.clientWidth || inner.clientWidth || 0;
+              if (vw < 760) {
+                badge.style.minHeight = '32px';
+                badge.style.padding = '5px 7px';
+                badge.style.fontSize = '9px';
+                badge.style.marginRight = '5px';
+              }
+
+              const parent = tabula.parentElement;
+              if (!parent || vw < 760) return;
+              const children = Array.from(parent.children).filter(el => {
+                const s = d.defaultView.getComputedStyle(el);
+                return s.display !== 'none' && s.position !== 'absolute' && s.position !== 'fixed';
+              });
+              const rightEdge = Math.max(...children.map(el => el.getBoundingClientRect().right));
+              const overflow = rightEdge - (vw - 10);
+              const rect = tabula.getBoundingClientRect();
+              if (overflow > 0 && rect.width > 220) {
+                const width = Math.max(220, Math.floor(rect.width - overflow - 8));
+                tabula.style.width = width + 'px';
+                tabula.style.maxWidth = width + 'px';
+                tabula.style.minWidth = '0';
+                tabula.style.flex = '0 1 ' + width + 'px';
+                tabula.style.whiteSpace = 'nowrap';
+                tabula.style.overflow = 'hidden';
+                tabula.style.textOverflow = 'ellipsis';
+              }
+            } catch (_) {}
+          };
+
+          d.defaultView.requestAnimationFrame(fitToolbar);
+          d.defaultView.addEventListener('resize', fitToolbar, {passive:true});
+        } catch (_) {}
+      };
+
+      if (!inner.__arsPresenceBound) {
+        inner.__arsPresenceBound = true;
+        inner.addEventListener('load', install);
+      }
+      install();
+      window.setTimeout(install, 300);
+      window.setTimeout(install, 1200);
+    } catch (_) {}
+  };
+
   const protect = () => {
     try {
       const d = frame.contentDocument;
       const w = frame.contentWindow;
       if (!d || !w) return;
+
+      installInlinePresence(d);
 
       const download = d.getElementById('download');
       if (download) download.remove();
@@ -133,7 +196,16 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071811}
 
   const render = (count) => {
     const n = Math.max(0, Number(count) || 0);
-    label.textContent = n === 1 ? '1 studioso online' : `${n} studiosi online`;
+    const text = n === 1 ? '1 studioso online' : `${n} studiosi online`;
+    label.textContent = text;
+    try {
+      const outer = document.getElementById('book');
+      const viewerDoc = outer && outer.contentDocument;
+      const inner = viewerDoc && viewerDoc.getElementById('content');
+      const bookDoc = inner && inner.contentDocument;
+      const inline = bookDoc && bookDoc.getElementById('scholar-presence-inline-text');
+      if (inline) inline.textContent = text;
+    } catch (_) {}
   };
 
   const minuteId = () => String(Math.floor(Date.now() / 60000));
