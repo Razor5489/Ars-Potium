@@ -49,18 +49,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071811}
   white-space:nowrap;
   padding:1px 1px 2px 0;
 }
-#wau-presence{
-  position:fixed !important;
-  left:-10000px !important;
-  top:-10000px !important;
-  width:1px !important;
-  height:1px !important;
-  overflow:hidden !important;
-  opacity:0 !important;
-  pointer-events:none !important;
-  transform:none !important;
-  margin:0 !important;
-}
 @media(max-width:700px){
   #scholar-presence{
     left:8px;
@@ -81,10 +69,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071811}
 <div id="scholar-presence" aria-live="polite">
   <span class="presence-dot" aria-hidden="true"></span>
   <span id="scholar-presence-text">0 studiosi online</span>
-  <span id="wau-presence" aria-label="Contatore visitatori in tempo reale">
-    <script id="_wauapm">var _wau = _wau || []; _wau.push(["dynamic", "3mkyj1ebga", "apm", "2a1f16e7d7a8", "small"]);</script>
-    <script async src="https://waust.at/d.js"></script>
-  </span>
 </div>
 
 <script>
@@ -137,34 +121,81 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071811}
 })();
 
 (() => {
-  const host = document.getElementById('wau-presence');
   const label = document.getElementById('scholar-presence-text');
-  if (!host || !label) return;
+  if (!label) return;
 
-  const updateLabel = () => {
-    const textParts = [];
-    const walker = document.createTreeWalker(host, NodeFilter.SHOW_TEXT);
-    let node;
-    while ((node = walker.nextNode())) {
-      const parent = node.parentElement;
-      if (!parent || ['SCRIPT','STYLE'].includes(parent.tagName)) continue;
-      const value = node.nodeValue.trim();
-      if (value) textParts.push(value);
-    }
-    const visibleText = textParts.join(' ');
-    const match = visibleText.match(/\b(\d{1,5})\b/);
-    if (!match) return;
+  const API = 'https://abacus.jasoncameron.dev';
+  const NAMESPACE = 'ars-potionum-razor5489-presence-9f3b2c7a';
+  const MARKER = 'arsPotionumPresenceMinuteV2';
+  let syncing = false;
 
-    const count = Math.max(0, Number(match[1]) || 0);
-    label.textContent = count === 1
-      ? '1 studioso online'
-      : `${count} studiosi online`;
+  const render = (count) => {
+    const n = Math.max(0, Number(count) || 0);
+    label.textContent = n === 1 ? '1 studioso online' : `${n} studiosi online`;
   };
 
-  const observer = new MutationObserver(updateLabel);
-  observer.observe(host, {childList:true, subtree:true, characterData:true});
-  window.setTimeout(updateLabel, 1000);
-  window.setTimeout(updateLabel, 3000);
+  const minuteId = () => String(Math.floor(Date.now() / 60000));
+  const counterKey = (minute) => `online-${minute}`;
+
+  const readCounter = async (minute) => {
+    const res = await fetch(`${API}/get/${NAMESPACE}/${counterKey(minute)}?t=${Date.now()}`, {
+      cache: 'no-store',
+      mode: 'cors'
+    });
+    if (res.status === 404) return 0;
+    if (!res.ok) throw new Error(`Presence read failed: ${res.status}`);
+    const data = await res.json();
+    return Math.max(0, Number(data.value) || 0);
+  };
+
+  const hitCounter = async (minute) => {
+    const res = await fetch(`${API}/hit/${NAMESPACE}/${counterKey(minute)}?t=${Date.now()}`, {
+      cache: 'no-store',
+      mode: 'cors'
+    });
+    if (!res.ok) throw new Error(`Presence hit failed: ${res.status}`);
+    const data = await res.json();
+    return Math.max(0, Number(data.value) || 0);
+  };
+
+  const syncPresence = async () => {
+    if (syncing) return;
+    syncing = true;
+    const minute = minuteId();
+    let hitValue = null;
+
+    try {
+      let lastMinute = null;
+      try { lastMinute = localStorage.getItem(MARKER); } catch (_) {}
+
+      if (lastMinute !== minute) {
+        try { localStorage.setItem(MARKER, minute); } catch (_) {}
+        try {
+          hitValue = await hitCounter(minute);
+        } catch (error) {
+          try {
+            if (localStorage.getItem(MARKER) === minute) localStorage.removeItem(MARKER);
+          } catch (_) {}
+          throw error;
+        }
+      }
+
+      const current = await readCounter(minute).catch(() => hitValue);
+      if (current !== null && current !== undefined) render(current);
+    } catch (_) {
+      if (hitValue !== null) render(hitValue);
+    } finally {
+      syncing = false;
+    }
+  };
+
+  syncPresence();
+  window.setInterval(syncPresence, 5000);
+  window.addEventListener('focus', syncPresence);
+  window.addEventListener('pageshow', syncPresence);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) syncPresence();
+  });
 })();
 </script>
 </body>
