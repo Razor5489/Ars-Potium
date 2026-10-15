@@ -1,0 +1,156 @@
+
+:root{
+  --gold:#b8974e;--gold-soft:#8f7846;--cream:#f8f4e8;--ink:#252c25;
+  --green:#173d30;--deep:#06120e;--wood:#25180f;--height:640px;--width:452.55px;
+  --ui:#0c1d17e8;--ui-border:#5f4b2b;--turn-ms:940ms
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{
+  color:#eee7d5;font:15px/1.45 Georgia,'Times New Roman',serif;
+  background:
+    radial-gradient(ellipse at 50% 42%,#5a3e2860 0 22%,transparent 54%),
+    radial-gradient(ellipse at 50% 55%,#352318 0,#21160f 58%,#0f0a07 100%);
+}
+body:after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at 50% 48%,transparent 45%,#0000002a 78%,#00000058 100%);
+}
+button,input,select{font:inherit}
+button,select{
+  color:#e8ddc0;border:1px solid #675633;background:#13261edb;border-radius:4px;
+  padding:7px 11px;cursor:pointer;min-height:36px;box-shadow:inset 0 0 0 1px #0004;
+  transition:background .18s ease,border-color .18s ease,opacity .18s ease
+}
+button:hover,select:hover{border-color:var(--gold);background:#1d352add}
+button:disabled{opacity:.28;cursor:default}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+button svg{width:18px;height:18px;display:block;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+.shell{height:100%;display:flex;flex-direction:column;position:relative;z-index:1}
+.top,.bottom{
+  transition:opacity .38s ease,transform .38s ease;
+  background:linear-gradient(180deg,#0d2119ec,#081710e3);border-color:var(--ui-border);
+  z-index:20;backdrop-filter:blur(7px) saturate(.85)
+}
+.shell.idle .top{opacity:0;transform:translateY(-104%);pointer-events:none}
+.shell.idle .bottom{opacity:0;transform:translateY(104%);pointer-events:none}
+.top{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 22px;border-bottom:1px solid var(--ui-border)}
+.brand strong{font-size:17px;letter-spacing:3.8px;color:#c8aa63;font-weight:400}
+.brand span{display:block;color:#b2b19f;font-size:11px;font-style:italic;letter-spacing:.45px;margin-top:1px}
+.tools{display:flex;align-items:center;gap:6px;font:13px/1.3 Georgia,serif}
+select{max-width:230px}
+
+.viewport{
+  flex:1;min-height:0;overflow:hidden;position:relative;overscroll-behavior:contain;
+  scrollbar-color:#705c39 #1d130d;
+  background:radial-gradient(ellipse at 50% 50%,#51392544 0,#22170f42 58%,#0907058a 100%)
+}
+.canvas{min-width:100%;min-height:100%;width:100%;display:flex;align-items:center;justify-content:center;padding:32px 48px}
+.stage{
+  position:relative;width:calc(var(--width)*2);height:var(--height);perspective:3600px;perspective-origin:50% 47%;
+  flex-shrink:0;transition:width .3s ease,height .3s ease;filter:drop-shadow(0 25px 25px #0008)
+}
+.stage:before{
+  content:"";position:absolute;left:7%;right:7%;bottom:-12px;height:21px;border-radius:50%;
+  background:#07040370;filter:blur(12px);z-index:-1;pointer-events:none
+}
+.book{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 700ms cubic-bezier(.22,.65,.24,1);touch-action:pan-y}
+.stage.cover .book{transform:translateX(-25%)}
+.stage.end .book{transform:translateX(25%)}
+
+.page{
+  position:absolute;top:0;width:50%;height:100%;background:var(--cream);box-shadow:none!important;border-radius:1px;
+  overflow:hidden;user-select:none;border-top:1px solid #c9ba91;border-bottom:1px solid #aa976b;isolation:isolate
+}
+.page.left{left:0}
+.page.right{left:50%}
+.stage:not(.single) .page.left{width:calc(50% + .45px)}
+.stage:not(.single) .page.right{left:calc(50% - .45px);width:calc(50% + .45px)}
+.page img,.face img{display:block;width:100%;height:100%;object-fit:fill;user-select:none;-webkit-user-drag:none;image-rendering:auto}
+.page.blank{background:transparent;border:0;pointer-events:none}
+.page:before,.page:after,.face:before,.face:after{content:none!important;display:none!important}
+.binding{display:none!important}
+
+/* Il movimento vive soltanto sul foglio in transito: nessuna ombra fissa al centro. */
+.leaf{
+  position:absolute;top:0;width:50%;height:100%;z-index:8;transform-style:preserve-3d;will-change:transform;
+  pointer-events:none;-webkit-transform-style:preserve-3d
+}
+.leaf.forward{left:50%;transform-origin:left center}
+.leaf.backward{left:0;transform-origin:right center}
+.face{
+  position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--cream);
+  overflow:hidden;box-shadow:none!important;border-radius:1px;transform-style:preserve-3d
+}
+.face.front{transform:rotateY(0deg) translateZ(.35px)}
+.face.back{transform:rotateY(180deg) translateZ(.35px)}
+
+/* Le copertine restano più materiche senza creare bordi o riquadri artificiali nel foglio. */
+.page[data-kind="cover"],.face[data-kind="cover"]{border-color:#6d5930;background:#0d392d}
+.page[data-kind="divider"],.face[data-kind="divider"]{border-color:#b9a66f}
+
+.stage.single{width:var(--width)}
+.stage.single .book{transform:none}
+.stage.single .page{left:0;width:100%}
+.stage.single .page.left{display:none}
+.stage.single .leaf{left:0;width:100%}
+.stage.single .leaf.backward{transform-origin:right center}
+
+.turn-area{
+  position:absolute;top:0;bottom:0;width:18%;z-index:10;cursor:pointer;background:transparent!important;border:0!important;
+  border-radius:0;opacity:0;box-shadow:none!important;outline:none!important;-webkit-appearance:none;appearance:none;padding:0
+}
+.turn-area:hover,.turn-area:focus,.turn-area:focus-visible,.turn-area:active{
+  background:transparent!important;border:0!important;box-shadow:none!important;outline:none!important;opacity:0!important
+}
+.turn-area.prev{left:0}.turn-area.next{right:0}
+.stage.cover .turn-area.prev,.stage.end .turn-area.next{display:none}
+
+.bottom{display:flex;align-items:center;justify-content:center;gap:16px;padding:8px 20px;border-top:1px solid var(--ui-border);font:13px/1.4 Georgia,serif}
+.pager{display:flex;align-items:center;gap:6px}
+.pager input{
+  width:48px;text-align:center;padding:6px 3px;border:1px solid #6b593a;background:#13251d;color:#eee4c9;
+  border-radius:3px;appearance:textfield
+}
+.page-label{min-width:188px;text-align:center;color:#d7c9aa;letter-spacing:.25px}
+.hint{
+  font:italic 11px Georgia,serif;color:#b9aa8c;text-align:center;position:absolute;left:20px;right:20px;bottom:8px;
+  pointer-events:none;text-shadow:0 1px #000;opacity:.75;transition:opacity .35s ease
+}
+.shell.idle .hint{opacity:0}
+/* V3.4 — durante l’ingrandimento il suggerimento di navigazione non deve sovrapporsi alle pagine. */
+.shell.zoomed .hint{display:none!important;opacity:0!important}
+.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.loading{
+  position:fixed;inset:0;background:radial-gradient(circle,#17392d,#07120e 70%);z-index:100;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;gap:14px;font-size:25px;letter-spacing:4px;color:#c7a65a;transition:opacity .35s ease
+}
+.loading small{font:italic 15px Georgia,serif;color:#c7c0a9;letter-spacing:.5px}
+.loading[hidden]{display:none}
+.page,.page.left,.page.right,.leaf,.face,.face.front,.face.back{box-shadow:none!important;text-shadow:none}
+
+@media(max-width:900px){
+  .top{padding:8px 10px;flex-wrap:wrap;gap:7px}.brand strong{font-size:15px;letter-spacing:2.7px}.brand span{display:none}
+  .tools{gap:5px;flex-wrap:wrap}.tools button,.tools select{padding:6px 8px;min-height:34px;font-size:12px}select{max-width:155px}
+  .canvas{padding:10px}.bottom{padding:7px 8px;gap:8px;flex-wrap:wrap}.page-label{min-width:135px;font-size:11px}.pager{gap:5px}
+  .pager input{width:44px;padding:6px 3px}.hint{display:none}#full,#mode{display:none}.turn-area{width:26%}.stage{filter:drop-shadow(0 16px 16px #0007)}
+}
+@media(max-width:420px){.top{justify-content:center}.brand{width:100%;text-align:center}.tools{justify-content:center}.bottom{gap:6px}.pager button{padding:6px 8px}.canvas{padding:8px}}
+
+/* V3.3 — giunzione centrale pulita durante l'ingrandimento.
+   La maschera resta sotto il foglio animato (leaf z-index 8) e sopra le sole pagine statiche. */
+.stage.zoomed:not(.single):not(.cover):not(.end) .book::after{
+  content:"";position:absolute;top:0;bottom:0;left:50%;width:30px;transform:translateX(-50%);
+  z-index:4;pointer-events:none;
+  background:linear-gradient(90deg,
+    rgba(249,244,232,0) 0%,
+    rgba(249,244,232,.94) 17%,
+    rgb(249,244,232) 32%,
+    rgb(249,244,232) 68%,
+    rgba(249,244,232,.94) 83%,
+    rgba(249,244,232,0) 100%);
+}
+@media(prefers-reduced-motion:reduce){.book,.stage,.top,.bottom,.hint{transition:none}}
+
+#sound{display:none!important}
