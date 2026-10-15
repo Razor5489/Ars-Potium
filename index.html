@@ -18,18 +18,19 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071811}
   display:flex;
   align-items:center;
   gap:7px;
-  padding:5px 8px;
+  padding:6px 10px 7px;
   border:1px solid rgba(214,190,136,.16);
   border-radius:9px;
   background:rgba(7,24,17,.42);
   color:rgba(231,218,184,.72);
-  font:italic 11px/1.2 Georgia,"Times New Roman",serif;
+  font:italic 11px/1.35 Georgia,"Times New Roman",serif;
   letter-spacing:.01em;
   box-shadow:0 2px 10px rgba(0,0,0,.10);
   backdrop-filter:blur(2px);
   -webkit-backdrop-filter:blur(2px);
   pointer-events:none;
   user-select:none;
+  overflow:visible;
 }
 #scholar-presence .presence-dot{
   width:5px;
@@ -40,25 +41,33 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071811}
   box-shadow:0 0 5px rgba(155,174,123,.35);
   opacity:.75;
 }
+#scholar-presence-text{
+  display:block;
+  white-space:nowrap;
+  padding:1px 1px 2px 0;
+}
 #wau-presence{
-  display:inline-flex;
-  align-items:center;
-  transform:scale(.62);
-  transform-origin:left center;
-  opacity:.52;
-  margin-right:-20px;
-  pointer-events:auto;
+  position:fixed !important;
+  left:-10000px !important;
+  top:-10000px !important;
+  width:1px !important;
+  height:1px !important;
+  overflow:hidden !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+  transform:none !important;
+  margin:0 !important;
 }
 @media(max-width:700px){
   #scholar-presence{
     left:8px;
     bottom:8px;
     max-width:calc(100vw - 28px);
-    padding:4px 7px;
+    padding:5px 9px 6px;
     font-size:10px;
+    line-height:1.35;
     background:rgba(7,24,17,.34);
   }
-  #wau-presence{transform:scale(.56);margin-right:-24px}
 }
 @media print{html,body,#book,#scholar-presence{display:none!important}}
 </style>
