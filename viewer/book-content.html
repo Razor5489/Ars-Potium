@@ -279,8 +279,8 @@ function rustleSound(heavy=false){
     const duration=(heavy?.28:.21)+Math.random()*.035,src=audioCtx.createBufferSource(),high=audioCtx.createBiquadFilter(),low=audioCtx.createBiquadFilter(),gain=audioCtx.createGain();
     src.buffer=makeNoiseBuffer(duration);src.playbackRate.value=.95+Math.random()*.08;
     high.type='highpass';high.frequency.value=heavy?115:210;high.Q.value=.3;low.type='lowpass';low.frequency.value=heavy?1750:2450;low.Q.value=.4;
-    const now=audioCtx.currentTime,peak=heavy?.0275:.0225;gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(peak,now+.035);
-    gain.gain.exponentialRampToValueAtTime(.0075,now+duration*.62);gain.gain.exponentialRampToValueAtTime(.0001,now+duration);
+    const now=audioCtx.currentTime,peak=heavy?.22:.18;gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(peak,now+.035);
+    gain.gain.exponentialRampToValueAtTime(.06,now+duration*.62);gain.gain.exponentialRampToValueAtTime(.0001,now+duration);
     src.connect(high);high.connect(low);low.connect(gain);gain.connect(audioCtx.destination);src.start(now)
   }catch(e){}
 }
@@ -290,7 +290,7 @@ function settleSound(heavy=false){
     audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
     const osc=audioCtx.createOscillator(),gain=audioCtx.createGain(),now=audioCtx.currentTime;
     osc.type='sine';osc.frequency.setValueAtTime(heavy?92:118,now);osc.frequency.exponentialRampToValueAtTime(heavy?70:88,now+.055);
-    gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(heavy?.0125:.0075,now+.006);gain.gain.exponentialRampToValueAtTime(.0001,now+.07);
+    gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(heavy?.025:.015,now+.006);gain.gain.exponentialRampToValueAtTime(.0001,now+.07);
     osc.connect(gain);gain.connect(audioCtx.destination);osc.start(now);osc.stop(now+.075)
   }catch(e){}
 }
