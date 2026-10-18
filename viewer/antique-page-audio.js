@@ -1,4 +1,4 @@
-/* Ars Potionum - fruscio di carta antica, versione 2026-10-18 */
+/* Ars Potionum - fruscio di carta antica, versione delicata 2026-10-18 */
 (() => {
   'use strict';
   if (window.__arsAntiquePageAudio) return;
@@ -56,7 +56,7 @@
     low.frequency.exponentialRampToValueAtTime(lpEnd, start + duration * 0.75);
     low.Q.value = 0.35;
     gain.gain.setValueAtTime(0.0001, start);
-    gain.gain.exponentialRampToValueAtTime(volume, start + duration * 0.19);
+    gain.gain.exponentialRampToValueAtTime(volume, start + duration * 0.24);
     gain.gain.exponentialRampToValueAtTime(volume * 0.64, start + duration * 0.53);
     gain.gain.exponentialRampToValueAtTime(volume * 0.23, start + duration * 0.81);
     gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
@@ -74,9 +74,9 @@
     const ctx = context();
     if (!ctx) return;
     const now = ctx.currentTime + 0.008;
-    layer(ctx, now, heavy ? 0.45 : 0.36, heavy ? 0.14 : 0.12, 360, 2400, 3150);
-    layer(ctx, now + 0.16, heavy ? 0.32 : 0.27, heavy ? 0.10 : 0.086, 700, 4600, 2700);
-    layer(ctx, now + 0.36, 0.13, heavy ? 0.035 : 0.03, 1700, 5700, 4200);
+    layer(ctx, now, heavy ? 0.45 : 0.36, heavy ? 0.115 : 0.096, 360, 2300, 2850);
+    layer(ctx, now + 0.16, heavy ? 0.32 : 0.27, heavy ? 0.08 : 0.068, 680, 4000, 2500);
+    layer(ctx, now + 0.36, 0.13, heavy ? 0.027 : 0.022, 1600, 4900, 3600);
   };
 
   // Il foglio si adagia sul volume: solo un piccolo contatto di carta, niente tono elettronico.
@@ -85,8 +85,8 @@
     const ctx = context();
     if (!ctx) return;
     const now = ctx.currentTime + 0.006;
-    layer(ctx, now, heavy ? 0.16 : 0.12, heavy ? 0.055 : 0.041, 240, 2100, 1300);
-    layer(ctx, now + 0.025, 0.09, heavy ? 0.023 : 0.018, 1350, 3900, 2400);
+    layer(ctx, now, heavy ? 0.16 : 0.12, heavy ? 0.044 : 0.032, 250, 1950, 1250);
+    layer(ctx, now + 0.025, 0.09, heavy ? 0.018 : 0.014, 1250, 3600, 2200);
   };
 
   window.addEventListener('pagehide', () => {
