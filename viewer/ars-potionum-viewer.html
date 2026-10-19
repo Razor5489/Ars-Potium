@@ -35,6 +35,12 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071811}
       if (soundControl && soundControl.getAttribute('aria-pressed') === 'true') {
         soundControl.click();
       }
+      if (!d.getElementById('chapter-navigation-script')) {
+        const navigation = d.createElement('script');
+        navigation.id = 'chapter-navigation-script';
+        navigation.src = new URL('chapter-navigation.js?v=20261019-index-sync1', location.href).href;
+        d.body.appendChild(navigation);
+      }
       const download = d.getElementById('download');
       if (download) download.remove();
       if (!d.getElementById('background-music-script')) {
