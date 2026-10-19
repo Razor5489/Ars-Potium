@@ -41,6 +41,12 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071811}
         navigation.src = new URL('chapter-navigation.js?v=20261019-index-sync1', location.href).href;
         d.body.appendChild(navigation);
       }
+      if (!d.getElementById('single-page-turn-script')) {
+        const singleTurn = d.createElement('script');
+        singleTurn.id = 'single-page-turn-script';
+        singleTurn.src = new URL('single-page-turn.js?v=20261019-single1', location.href).href;
+        d.body.appendChild(singleTurn);
+      }
       const download = d.getElementById('download');
       if (download) download.remove();
       if (!d.getElementById('background-music-script')) {
