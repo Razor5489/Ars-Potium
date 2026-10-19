@@ -11,7 +11,7 @@
 
   const enabled = () => {
     const control = document.getElementById('sound');
-    return !control || control.getAttribute('aria-pressed') !== 'false';
+    return !!control && control.getAttribute('aria-pressed') === 'true';
   };
   const context = () => {
     try {
