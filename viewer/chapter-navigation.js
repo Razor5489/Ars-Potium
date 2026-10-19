@@ -102,5 +102,11 @@
 
   `;
   document.head.appendChild(style);
+  // Ricalcola lo spazio del libro quando la riga degli argomenti cambia altezza.
+  if (toolbar && typeof ResizeObserver === 'function') {
+    const observer = new ResizeObserver(() => resize());
+    observer.observe(toolbar);
+    window.addEventListener('pagehide', () => observer.disconnect(), {once:true});
+  }
   sync();
 })();
