@@ -1,4 +1,4 @@
-/* Ars Potionum - fruscio di carta antica, versione delicata a volume ridotto 2026-10-18 */
+/* Ars Potionum - fruscio di carta antica, versione delicata con volume aumentato del 20% 2026-10-19 */
 (() => {
   'use strict';
   if (window.__arsAntiquePageAudio) return;
@@ -42,6 +42,7 @@
 
   // Un soffio vellutato, seguito dal crepitio leggero delle fibre di carta.
   const layer = (ctx, start, duration, volume, hpHz, lpStart, lpEnd) => {
+    volume *= 1.2;
     const source = ctx.createBufferSource();
     const high = ctx.createBiquadFilter();
     const low = ctx.createBiquadFilter();
