@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1608" height="2274" viewBox="0 0 1608 2274">
+      <defs>
+        <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#f8f4e8"/>
+          <stop offset="0.5" stop-color="#f6f1e3"/>
+          <stop offset="1" stop-color="#f8f4e8"/>
+        </linearGradient>
+        <filter id="grain" x="-10%" y="-10%" width="120%" height="120%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="2" seed="13" result="n"/>
+          <feColorMatrix in="n" type="saturate" values="0" result="g"/>
+          <feComponentTransfer in="g"><feFuncA type="table" tableValues="0 0.045"/></feComponentTransfer>
+        </filter>
+      </defs>
+      <rect width="1608" height="2274" fill="url(#paper)"/>
+      <rect width="1608" height="2274" filter="url(#grain)" opacity="0.33"/>
+      <rect x="116" y="116" width="1376" height="2042" rx="2" fill="none" stroke="#b8974e" stroke-width="2" opacity="0.58"/>
+      <rect x="138" y="138" width="1332" height="1998" rx="2" fill="none" stroke="#173d30" stroke-width="1.5" opacity="0.24"/>
+      <text x="804" y="300" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="32" letter-spacing="8" fill="#6f775f">ARS POTIONUM</text>
+      <line x1="520" y1="356" x2="1088" y2="356" stroke="#b8974e" stroke-width="2" opacity="0.72"/>
+      <text x="804" y="835" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="70" letter-spacing="10" fill="#173d30">ANNO V</text>
+      <text x="804" y="1042" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="220" font-weight="bold" fill="#173d30" opacity="0.12">V</text>
+      <text x="804" y="1214" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="68" font-weight="bold" fill="#263e34">Le preparazioni composte</text>
+      <text x="804" y="1304" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="32" font-style="italic" letter-spacing="2" fill="#8d7443">Praeparationes Compositae</text>
+      <g transform="translate(804,1475)" stroke="#b8974e" fill="none" opacity="0.72">
+        <line x1="-250" y1="0" x2="-50" y2="0" stroke-width="2"/><line x1="50" y1="0" x2="250" y2="0" stroke-width="2"/>
+        <path d="M-32 0 C-20 -18,-10 -18,0 0 C10 -18,20 -18,32 0 C20 18,10 18,0 0 C-10 18,-20 18,-32 0Z" stroke-width="2"/>
+      </g>
+      <text x="804" y="1622" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="30" fill="#596a5e">Più fasi, un solo metodo.</text>
+      <text x="804" y="2025" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="24" letter-spacing="3" fill="#8e907f">MANUALE DIDATTICO DI POZIONI · HOGWARTS · MDCCC</text>
+    </svg>

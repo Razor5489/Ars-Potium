@@ -40,8 +40,7 @@
         {transform:'rotateY(32deg) translateZ(2px)', opacity:1, offset:0.62},
         {transform:'rotateY(0deg) translateZ(0)', opacity:1, offset:1}
       ];
-      const duration = heavy ? (isCompact() ? 900 : 1120)
-        : divider ? (isCompact() ? 820 : 1020) : (isCompact() ? 720 : 900);
+      const duration = heavy ? 650 : divider ? 580 : 500;
       const motion = leaf.animate(frames, {
         duration, easing:'cubic-bezier(.18,.67,.18,1)', fill:'forwards'
       });
