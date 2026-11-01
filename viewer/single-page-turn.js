@@ -1,4 +1,4 @@
-/* Ars Potionum - sfogliamento singolo senza copia laterale, 2026-10-19 */
+/* Ars Potionum - single-page turns share the left binding in both directions. */
 (() => {
   'use strict';
   if (window.__arsSinglePageTurn || typeof window.turnTo !== 'function') return;
@@ -25,6 +25,8 @@
       setPage($('right'), forward ? target : previous);
       leaf = document.createElement('div');
       leaf.className = 'leaf ' + (forward ? 'forward' : 'backward');
+      // Returning a page retraces the forward turn around the same binding.
+      leaf.style.transformOrigin = 'left center';
       leaf.dataset.kind = heavy ? 'cover' : divider ? 'divider' : 'paper';
       leaf.append(face(forward ? previous : target));
       book.append(leaf);
@@ -35,9 +37,9 @@
         {transform:'rotateY(-72deg) translateZ(1px)', opacity:1, offset:0.78},
         {transform:'rotateY(-89.7deg) translateZ(0)', opacity:0, offset:1}
       ] : [
-        {transform:'rotateY(89.7deg) translateZ(0)', opacity:0, offset:0},
-        {transform:'rotateY(72deg) translateZ(1px)', opacity:1, offset:0.22},
-        {transform:'rotateY(32deg) translateZ(2px)', opacity:1, offset:0.62},
+        {transform:'rotateY(-89.7deg) translateZ(0)', opacity:0, offset:0},
+        {transform:'rotateY(-72deg) translateZ(1px)', opacity:1, offset:0.22},
+        {transform:'rotateY(-32deg) translateZ(2px)', opacity:1, offset:0.62},
         {transform:'rotateY(0deg) translateZ(0)', opacity:1, offset:1}
       ];
       const duration = heavy ? 650 : divider ? 580 : 500;
