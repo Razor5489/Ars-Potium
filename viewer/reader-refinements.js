@@ -71,7 +71,7 @@
     $('status').title='Posizione nel lettore: '+visible.map(i=>i+1).join('–')+' di '+count;
     if(document.activeElement!==$('pageInput'))$('pageInput').value=folio(visible[0]);
     const marked=bookmarks.includes(activePage());bookmark.textContent=marked?'Pagina segnata':'Segna pagina';bookmark.setAttribute('aria-pressed',String(marked));bookmark.title='Segnalibro: pagina '+folio(activePage());bookmark.disabled=busy;
-    const p=currentPage(); let active=0;sections.forEach((s,i)=>{if(p>=s[1])active=i;});
+    const p=activePage(); let active=0;sections.forEach((s,i)=>{if(p>=s[1])active=i;});
     [...tabs.children].forEach((b,i)=>{b.disabled=busy;b.setAttribute('aria-current',i===active&&p>=2?'page':'false');});
     if(!busy)save('ars-last-page-v1',activePage());
   };
